@@ -49,14 +49,17 @@ func LoadConfig() (Config, error) {
 	var key []byte
 	path, set := os.LookupEnv("CORE_TLS_CLIENT_KEY_FILE")
 	if set {
+		fmt.Printf("Reading public key file from CORE_TLS_CLIENT_KEY_FILE at [%s]\n", path)
 		key, err = ioutil.ReadFile(path)
 		if err != nil {
-			return Config{}, fmt.Errorf("failed to read private key file: %s", err)
+			return Config{}, fmt.Errorf("failed to read private key file from CORE_TLS_CLIENT_KEY_FILE at [%s]: %s", path, err)
 		}
 	} else {
-		data, err := ioutil.ReadFile(os.Getenv("CORE_TLS_CLIENT_KEY_PATH"))
+		path = os.Getenv("CORE_TLS_CLIENT_KEY_PATH")
+		fmt.Printf("Reading public key file from CORE_TLS_CLIENT_KEY_PATH at [%s]\n", path)
+		data, err := ioutil.ReadFile(path)
 		if err != nil {
-			return Config{}, fmt.Errorf("failed to read private key file: %s", err)
+			return Config{}, fmt.Errorf("failed to read private key file from CORE_TLS_CLIENT_KEY_PATH at [%s]: %s", path, err)
 		}
 		key, err = base64.StdEncoding.DecodeString(string(data))
 		if err != nil {
